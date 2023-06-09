@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Invitations\Commands\SendInvitation\SendInvitationHandler.cs~RF99742e.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Abstractions\" />
-    <Folder Include="Invitations\" />
+    <Folder Include="Invitations\Commands\AcceptInvitation\" />
   </ItemGroup>
 
   <ItemGroup>

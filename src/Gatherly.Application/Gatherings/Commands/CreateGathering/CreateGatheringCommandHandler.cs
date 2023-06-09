@@ -22,7 +22,7 @@ internal sealed class CreateGatheringCommandHandler : IRequestHandler<CreateGath
 
     public async Task<Unit> Handle(CreateGatheringCommand request, CancellationToken cancellationToken)
     {
-        var member = await _memberRepository.GetByIdAsync(request.MemberId);
+        var member = await _memberRepository.GetByIdAsync(request.MemberId, cancellationToken);
 
         if (member == null) return Unit.Value;
 
