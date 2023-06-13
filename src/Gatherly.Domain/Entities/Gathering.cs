@@ -1,5 +1,8 @@
 ﻿using Gatherly.Domain.Enums;
+using Gatherly.Domain.Errors;
+using Gatherly.Domain.Exceptions;
 using Gatherly.Domain.Primitives;
+using Gatherly.Domain.Shared;
 
 namespace Gatherly.Domain.Entities;
 
@@ -56,39 +59,48 @@ public sealed class Gathering : Entity
 
 
         // Calculate gathering type details
-        switch (gathering.Type)
-        {
-            case GatheringType.WithFixedNumberOfAttendees:
-                if (maximumNumberOfAttendees is null)
-                {
-                    throw new Exception(
-                        $"{nameof(maximumNumberOfAttendees)} can't be null."
-                    );
-                }
-                gathering.MaximumNumberOfAttendees = maximumNumberOfAttendees;
-                break;
-            case GatheringType.WithExpirationForInvitations:
-                if (invitationsValidBeforeInHours is null)
-                {
-                    throw new Exception(
-                        $"{nameof(invitationsValidBeforeInHours)} can't be null."
-                    );
-                }
-                gathering.InvitationsExpireAtUtc = gathering.ScheduledAtUtc.AddHours(invitationsValidBeforeInHours.Value);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(GatheringType));
-        }
+        gathering.CalculateGatheringTypeDetails(maximumNumberOfAttendees, invitationsValidBeforeInHours);
 
         return gathering;
     }
 
-    public Invitation SendInvitation(Member member)
+    private void CalculateGatheringTypeDetails(
+        int? maximumNumberOfAttendees,
+        int? invitationsValidBeforeInHours)
+    {
+        switch (Type)
+        {
+            case GatheringType.WithFixedNumberOfAttendees:
+                if (maximumNumberOfAttendees is null)
+                {
+                    throw new GatheringMaximumNumberOfAttendeesIsNullDomainException(
+                        $"{nameof(maximumNumberOfAttendees)} can't be null."
+                    );
+                }
+                MaximumNumberOfAttendees = maximumNumberOfAttendees;
+                break;
+            case GatheringType.WithExpirationForInvitations:
+                if (invitationsValidBeforeInHours is null)
+                {
+                    throw new GatheringInvitationsValidBeforeInHoursIsNullDomainException(
+                        $"{nameof(invitationsValidBeforeInHours)} can't be null."
+                    );
+                }
+                InvitationsExpireAtUtc = ScheduledAtUtc.AddHours(invitationsValidBeforeInHours.Value);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(GatheringType));
+        }
+    }
+
+    public Result<Invitation> SendInvitation(Member member)
     {
         // Validate 
-        if (Creator.Id == member.Id) throw new Exception("Can't send invitation to the gathering creator.");
+        if (Creator.Id == member.Id) 
+            return Result.Failure<Invitation>(DomainErrors.Gathering.InvitingCreator);
 
-        if (ScheduledAtUtc < DateTime.UtcNow) throw new Exception("Can't send invitation for gathering in the past");
+        if (ScheduledAtUtc < DateTime.UtcNow) 
+            return Result.Failure<Invitation>(DomainErrors.Gathering.AlreadyPassed);
 
         var invitation = new Invitation(Guid.NewGuid(), member, this);
 
@@ -97,19 +109,19 @@ public sealed class Gathering : Entity
         return invitation;
     }
 
-    public Attendee? AcceptInvitation(Invitation invitation)
+    public Result<Attendee> AcceptInvitation(Invitation invitation)
     {
-        // Check if expired
-        var expired = (Type == GatheringType.WithFixedNumberOfAttendees &&
-                        NumberOfAttendees == MaximumNumberOfAttendees) ||
-                        (Type == GatheringType.WithExpirationForInvitations &&
-                        InvitationsExpireAtUtc < DateTime.UtcNow);
+        var reachedMaximumNumberOfAttendess = Type == GatheringType.WithFixedNumberOfAttendees && NumberOfAttendees == MaximumNumberOfAttendees;
+
+        var reachedInvitationsExpiration = Type == GatheringType.WithExpirationForInvitations && InvitationsExpireAtUtc < DateTime.UtcNow;
+
+        var expired = reachedMaximumNumberOfAttendess || reachedInvitationsExpiration;
 
         if (expired)
         {
             invitation.Expire();
 
-            return null;
+            return Result.Failure<Attendee>(DomainErrors.Gathering.Expired);
         }
 
         var attendee = invitation.Accept();
