@@ -18,4 +18,15 @@ public static class DomainErrors
             "Gathering.Expired",
             "Can't accept invitation for expired gathering");
     }
+
+    public static class FirstName
+    {
+        public static readonly Error NameIsEmpty = new (
+            "FirstName.Empty",
+            "First name is empty.");
+
+        public static readonly Error NameIsTooLong = new(
+            "FirstName.TooLong",
+            "First name is too long.");
+    }
 }
