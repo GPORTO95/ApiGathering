@@ -19,13 +19,24 @@ public static class DomainErrors
             "Can't accept invitation for expired gathering");
     }
 
+    public static class Email
+    {
+        public static readonly Error Empty = new(
+            "Email.Empty",
+            "Email is empty");
+
+        public static readonly Error InvalidFormat = new(
+            "Email.InvalidFormat",
+            "Email format is invalid");
+    }
+
     public static class FirstName
     {
-        public static readonly Error NameIsEmpty = new (
+        public static readonly Error Empty = new (
             "FirstName.Empty",
             "First name is empty.");
 
-        public static readonly Error NameIsTooLong = new(
+        public static readonly Error TooLong = new(
             "FirstName.TooLong",
             "First name is too long.");
     }

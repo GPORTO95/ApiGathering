@@ -18,10 +18,10 @@ public sealed class FirstName : ValueObject
     public static Result<FirstName> Create(string firstName)
     {
         if (string.IsNullOrWhiteSpace(firstName))
-            return Result.Failure<FirstName>(DomainErrors.FirstName.NameIsEmpty);
+            return Result.Failure<FirstName>(DomainErrors.FirstName.Empty);
 
         if(firstName.Length > MaxLength)
-            return Result.Failure<FirstName>(DomainErrors.FirstName.NameIsTooLong);
+            return Result.Failure<FirstName>(DomainErrors.FirstName.TooLong);
 
         return new FirstName(firstName);
     }
