@@ -40,4 +40,15 @@ public static class DomainErrors
             "FirstName.TooLong",
             "First name is too long.");
     }
+
+    public static class LastName
+    {
+        public static readonly Error Empty = new(
+            "LastName.Empty",
+            "Last name is empty.");
+
+        public static readonly Error TooLong = new(
+            "LastName.TooLong",
+            "Last name is too long.");
+    }
 }
