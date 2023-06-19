@@ -4,6 +4,13 @@ namespace Gatherly.Domain.Errors;
 
 public static class DomainErrors
 {
+    public static class Member
+    {
+        public static readonly Error EmailAlreadyInUse = new(
+            "Member.EmailAlreadyInUse",
+            "The specified email is already in use");
+    }
+
     public static class Gathering
     {
         public static readonly Error InvitingCreator = new (
