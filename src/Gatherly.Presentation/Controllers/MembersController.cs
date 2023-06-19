@@ -1,4 +1,5 @@
 ﻿using Gatherly.Application.Members.Commands.CreateMember;
+using Gatherly.Application.Members.Queries.GetMemberById;
 using Gatherly.Domain.Shared;
 using Gatherly.Presentation.Abstractions;
 using Gatherly.Presentation.Contracts.Members;
@@ -17,9 +18,11 @@ public sealed class MembersController : ApiController
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetMemberId(Guid id, CancellationToken cancellationToken)
     {
-        //var query = new 
+        var query = new GetMemberByIdQuery(id);
 
-        return Ok();
+        Result<MemberResponse> response = await Sender.Send(query, cancellationToken);
+
+        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
     }
 
     [HttpPost]
@@ -27,14 +30,20 @@ public sealed class MembersController : ApiController
         [FromBody] RegisterMemberRequest request,
         CancellationToken cancellationToken)
     {
-        //var command = new CreateMemberCommand(
-        //    request.Email,
-        //    request.FirstName,
-        //    request.LastName);
+        var command = new CreateMemberCommand(
+            request.Email,
+            request.FirstName,
+            request.LastName);
 
-        //Result<Guid> result = await Sender.Send(command, cancellationToken);
+        Result<Guid> result = await Sender.Send(command, cancellationToken);
 
-        return Ok();
+        if(result.IsFailure)
+            return BadRequest(result.Error);
+
+        return CreatedAtAction(
+            nameof(GetMemberId),
+            new { Id = result.Value },
+            result.Value);
     }
 
 }
