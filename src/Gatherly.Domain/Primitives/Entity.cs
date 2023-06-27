@@ -2,10 +2,9 @@
 
 public abstract class Entity : IEquatable<Entity>
 {
-    protected Entity(Guid id)
-    {
-        Id = id;
-    }
+    protected Entity(Guid id) => Id = id;
+
+    public Entity() { }
 
     public Guid Id { get; private init; }
 

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Gatherly.Domain.Entities;
+using Gatherly.Domain.Repositories;
+namespace Gatherly.Persistence.Repository;
 
-namespace Gatherly.Persistence.Repository
+internal sealed class AttendeeRepository : IAttendeeRepository
 {
-    internal class AttendeeRepository
+    public void Add(Attendee attendee)
     {
+        
     }
 }

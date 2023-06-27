@@ -9,27 +9,18 @@ namespace Gatherly.Application.Invitations.Commands.AcceptInvitation;
 
 internal sealed class AcceptInvitationCommandHandler : IRequestHandler<AcceptInvitationCommand>
 {
-    private readonly IInvitationRepository _invitationRepository;
-    private readonly IMemberRepository _memberRepository;
     private readonly IGatheringRepository _gatheringRepository;
     private readonly IAttendeeRepository _attendeeRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IEmailService _emailService;
 
     public AcceptInvitationCommandHandler(
-        IInvitationRepository invitationRepository, 
-        IMemberRepository memberRepository, 
         IGatheringRepository gatheringRepository, 
         IAttendeeRepository attendeeRepository, 
-        IUnitOfWork unitOfWork, 
-        IEmailService emailService)
+        IUnitOfWork unitOfWork)
     {
-        _invitationRepository = invitationRepository;
-        _memberRepository = memberRepository;
         _gatheringRepository = gatheringRepository;
         _attendeeRepository = attendeeRepository;
         _unitOfWork = unitOfWork;
-        _emailService = emailService;
     }
 
     public async Task<Unit> Handle(AcceptInvitationCommand request, CancellationToken cancellationToken)

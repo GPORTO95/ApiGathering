@@ -14,6 +14,8 @@ public sealed class Member : AggregateRoot
         Email = email;
     }
 
+    private Member() { }
+
     public FirstName FirstName { get; set; }
 
     public LastName LastName { get; set; }
