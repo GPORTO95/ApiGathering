@@ -5,6 +5,11 @@ namespace Gatherly.Infrastructure.Services;
 
 internal sealed class EmailService : IEmailService
 {
+    public Task SendWelcomeEmailAsync(Member member, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
     public Task SendInvitationAcceptedEmailAsync(Gathering gathering, CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
