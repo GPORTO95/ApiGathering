@@ -1,3 +1,5 @@
+using FluentValidation;
+using Gatherly.Application.Behaviors;
 using Gatherly.Infrastructure.BackgroundJobs;
 using Gatherly.Persistence;
 using Gatherly.Persistence.Interceptors;
@@ -19,6 +21,11 @@ builder
         .WithScopedLifetime());
 
 builder.Services.AddMediatR(Gatherly.Application.AssemblyReference.Assembly);
+
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+
+builder.Services.AddValidatorsFromAssembly(Gatherly.Application.AssemblyReference.Assembly,
+    includeInternalTypes: true);
 
 string connectionString = builder.Configuration.GetConnectionString("Database");
 
