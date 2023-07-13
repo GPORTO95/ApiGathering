@@ -37,7 +37,7 @@ namespace Gatherly.Persistence.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("Invitations", (string)null);
+                    b.ToTable("Attendess", (string)null);
                 });
 
             modelBuilder.Entity("Gatherly.Domain.Entities.Gathering", b =>
@@ -105,7 +105,7 @@ namespace Gatherly.Persistence.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("OutboxMessages", (string)null);
+                    b.ToTable("Invitations", (string)null);
                 });
 
             modelBuilder.Entity("Gatherly.Domain.Entities.Member", b =>
@@ -134,6 +134,34 @@ namespace Gatherly.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Members", (string)null);
+                });
+
+            modelBuilder.Entity("Gatherly.Persistence.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OccurredOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ProcessedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OutboxMessages", (string)null);
                 });
 
             modelBuilder.Entity("Gatherly.Domain.Entities.Attendee", b =>

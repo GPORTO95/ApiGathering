@@ -1,4 +1,4 @@
-﻿  using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -21,6 +21,22 @@ namespace Gatherly.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Members", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OutboxMessages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OccurredOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProcessedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Error = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutboxMessages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,7 +65,7 @@ namespace Gatherly.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Invitations",
+                name: "Attendess",
                 columns: table => new
                 {
                     GatheringId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -58,7 +74,35 @@ namespace Gatherly.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Invitations", x => new { x.GatheringId, x.MemberId });
+                    table.PrimaryKey("PK_Attendess", x => new { x.GatheringId, x.MemberId });
+                    table.ForeignKey(
+                        name: "FK_Attendess_Gatherings_GatheringId",
+                        column: x => x.GatheringId,
+                        principalTable: "Gatherings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Attendess_Members_MemberId",
+                        column: x => x.MemberId,
+                        principalTable: "Members",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Invitations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GatheringId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MemberId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Invitations", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Invitations_Gatherings_GatheringId",
                         column: x => x.GatheringId,
@@ -73,38 +117,20 @@ namespace Gatherly.Persistence.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "OutboxMessages",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GatheringId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MemberId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OutboxMessages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OutboxMessages_Gatherings_GatheringId",
-                        column: x => x.GatheringId,
-                        principalTable: "Gatherings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OutboxMessages_Members_MemberId",
-                        column: x => x.MemberId,
-                        principalTable: "Members",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_Attendess_MemberId",
+                table: "Attendess",
+                column: "MemberId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Gatherings_CreatorId",
                 table: "Gatherings",
                 column: "CreatorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invitations_GatheringId",
+                table: "Invitations",
+                column: "GatheringId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invitations_MemberId",
@@ -116,20 +142,13 @@ namespace Gatherly.Persistence.Migrations
                 table: "Members",
                 column: "Email",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OutboxMessages_GatheringId",
-                table: "OutboxMessages",
-                column: "GatheringId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OutboxMessages_MemberId",
-                table: "OutboxMessages",
-                column: "MemberId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Attendess");
+
             migrationBuilder.DropTable(
                 name: "Invitations");
 

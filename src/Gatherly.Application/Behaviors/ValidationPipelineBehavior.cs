@@ -47,14 +47,14 @@ public class ValidationPipelineBehavior<TRequest, TResponse>
     {
         if(typeof(TResult) == typeof(Result))
         {
-            return (ValidationResult.WithErros(errors) as TResult)!;
+            return (ValidationResult.WithErrors(errors) as TResult)!;
         }
 
         object validationResult = typeof(ValidationResult<>)
             .GetGenericTypeDefinition()
             .MakeGenericType(typeof(TResult).GenericTypeArguments[0])
-            .GetMethod(nameof(ValidationResult.WithErros))!
-            .Invoke(null, new object[] { errors })!;
+            .GetMethod(nameof(ValidationResult.WithErrors))!
+            .Invoke(null, new object?[] { errors })!;
 
         return (TResult) validationResult;
     }

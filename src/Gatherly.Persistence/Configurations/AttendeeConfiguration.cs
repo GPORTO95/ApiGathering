@@ -9,7 +9,7 @@ internal sealed class AttendeeConfiguration : IEntityTypeConfiguration<Attendee>
 {
     public void Configure(EntityTypeBuilder<Attendee> builder)
     {
-        builder.ToTable(TableNames.Invitations);
+        builder.ToTable(TableNames.Attendess);
 
         builder.HasKey(x => new { x.GatheringId, x.MemberId });
 
