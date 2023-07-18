@@ -1,6 +1,7 @@
 using FluentValidation;
 using Gatherly.Application.Behaviors;
 using Gatherly.Infrastructure.BackgroundJobs;
+using Gatherly.Infrastructure.Idempotence;
 using Gatherly.Persistence;
 using Gatherly.Persistence.Interceptors;
 using MediatR;
@@ -26,6 +27,8 @@ builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipeli
 
 builder.Services.AddValidatorsFromAssembly(Gatherly.Application.AssemblyReference.Assembly,
     includeInternalTypes: true);
+
+builder.Services.Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
 
 string connectionString = builder.Configuration.GetConnectionString("Database");
 

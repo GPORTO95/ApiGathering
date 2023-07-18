@@ -3,21 +3,16 @@ using Gatherly.Application.Abstractions.Messaging;
 using Gatherly.Domain.DomainEvents;
 using Gatherly.Domain.Entities;
 using Gatherly.Domain.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gatherly.Application.Members.Events;
 
-internal sealed class MemberRegisteredDomainEventHandler
+internal sealed class SendWelcomeEmailWhenMemberRegisteredDomainEventHandler
     : IDomainEventHandler<MemberRegisteredDomainEvent>
 {
     private readonly IMemberRepository _memberRepository;
     private readonly IEmailService _emailService;
 
-    public MemberRegisteredDomainEventHandler(
+    public SendWelcomeEmailWhenMemberRegisteredDomainEventHandler(
         IMemberRepository memberRepository, 
         IEmailService emailService)
     {

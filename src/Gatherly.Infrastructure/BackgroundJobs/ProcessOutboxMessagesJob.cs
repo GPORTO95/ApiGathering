@@ -13,6 +13,11 @@ namespace Gatherly.Infrastructure.BackgroundJobs;
 [DisallowConcurrentExecution]
 public class ProcessOutboxMessagesJob : IJob
 {
+    private static readonly JsonSerializerSettings JsonSerializerSttings = new()
+    {
+        TypeNameHandling = TypeNameHandling.All
+    };
+
     private readonly ApplicationDbContext _dbCotenxt;
     private readonly IPublisher _publisher;
 
@@ -33,7 +38,7 @@ public class ProcessOutboxMessagesJob : IJob
         foreach (OutboxMessage outboxMessage in messages)
         {
             var domainEvent = JsonConvert
-                .DeserializeObject<IDomainEvent>(outboxMessage.Content);
+                .DeserializeObject<IDomainEvent>(outboxMessage.Content, JsonSerializerSttings);
 
             if (domainEvent is null) continue;
 

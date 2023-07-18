@@ -26,7 +26,9 @@ public sealed class Member : AggregateRoot
     {
         var member = new Member(id, firstName, lastName, email);
 
-        member.RaiseDomainEvent(new MemberRegisteredDomainEvent(member.Id));
+        member.RaiseDomainEvent(new MemberRegisteredDomainEvent(
+            Guid.NewGuid(),
+            member.Id));
 
         return member;
     }
