@@ -1,5 +1,4 @@
-﻿using Gatherly.Domain.Entities;
-using Gatherly.Persistence.Constants;
+﻿using Gatherly.Persistence.Constants;
 using Gatherly.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

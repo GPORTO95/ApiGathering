@@ -39,7 +39,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(
     {
         var interceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
 
-        optionsBuilder.UseSqlServer(connectionString)
+        optionsBuilder.UseSqlServer(connectionString,
+                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
             .AddInterceptors(interceptor);
     });
 
