@@ -10,9 +10,9 @@ public static class DomainErrors
             "Member.EmailAlreadyInUse",
             "The specified email is already in use");
 
-        public static readonly Error NotFound = new(
+        public static readonly Func<Guid, Error> NotFound = id => new Error(
             "Member.NotFound",
-            "The member was not found");
+            $"The member with the identifier {id} was not found.");
     }
 
     public static class Gathering

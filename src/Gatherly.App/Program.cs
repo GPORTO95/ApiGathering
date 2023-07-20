@@ -25,23 +25,29 @@ builder.Services.AddMediatR(Gatherly.Application.AssemblyReference.Assembly);
 
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
-builder.Services.AddValidatorsFromAssembly(Gatherly.Application.AssemblyReference.Assembly,
-    includeInternalTypes: true);
-
 builder.Services.Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
+
+builder.Services.AddValidatorsFromAssembly(
+    Gatherly.Application.AssemblyReference.Assembly,
+    includeInternalTypes: true);
 
 string connectionString = builder.Configuration.GetConnectionString("Database");
 
 builder.Services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
 
+builder.Services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
+
 builder.Services.AddDbContext<ApplicationDbContext>(
     (sp, optionsBuilder) =>
     {
-        var interceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
+        var outboxInterceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>()!;
+        var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>()!;
 
         optionsBuilder.UseSqlServer(connectionString,
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
-            .AddInterceptors(interceptor);
+            .AddInterceptors(
+                outboxInterceptor,
+                auditableInterceptor);
     });
 
 builder.Services.AddQuartz(configure =>

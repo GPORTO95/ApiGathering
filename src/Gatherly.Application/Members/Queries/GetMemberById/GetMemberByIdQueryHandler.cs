@@ -22,7 +22,7 @@ internal sealed class GetMemberByIdQueryHandler
         var member = await _memberRepository.GetByIdAsync(request.MemberId, cancellationToken);
 
         if (member is null)
-            return Result.Failure<MemberResponse>(DomainErrors.Member.NotFound);
+            return Result.Failure<MemberResponse>(DomainErrors.Member.NotFound(request.MemberId));
 
         var response = new MemberResponse(member.Id, member.Email.Value);
 

@@ -4,7 +4,7 @@ using Gatherly.Domain.ValueObjects;
 
 namespace Gatherly.Domain.Entities;
 
-public sealed class Member : AggregateRoot
+public sealed class Member : AggregateRoot, IAuditableEntity
 {
     private Member(Guid id, FirstName firstName, LastName lastName, Email email)
         : base(id)
@@ -22,6 +22,10 @@ public sealed class Member : AggregateRoot
 
     public Email Email { get; set; }
 
+    public DateTime CreatedOnUtc { get; set; }
+
+    public DateTime? ModifiedOnUtc { get; set; }
+
     public static Member Create(Guid id, FirstName firstName, LastName lastName, Email email)
     {
         var member = new Member(id, firstName, lastName, email);
@@ -31,5 +35,11 @@ public sealed class Member : AggregateRoot
             member.Id));
 
         return member;
+    }
+
+    public void ChangeName(FirstName firstName, LastName lastName) 
+    {
+        FirstName = firstName;
+        LastName = lastName;
     }
 }
