@@ -1,15 +1,22 @@
 using FluentValidation;
 using Gatherly.App.Middlewares;
 using Gatherly.Application.Behaviors;
+using Gatherly.Domain.Repositories;
 using Gatherly.Infrastructure.BackgroundJobs;
 using Gatherly.Infrastructure.Idempotence;
 using Gatherly.Persistence;
 using Gatherly.Persistence.Interceptors;
+using Gatherly.Persistence.Repository;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
+using Scrutor;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+// Scrutor
+builder.Services.Decorate<IMemberRepository, CachedMemberRepository>();
 
 builder
     .Services
@@ -19,8 +26,11 @@ builder
             Gatherly.Infrastructure.AssemblyReference.Assembly,
             Gatherly.Persistence.AssemblyReference.Assembly)
         .AddClasses(false)
+        .UsingRegistrationStrategy(RegistrationStrategy.Skip)
         .AsImplementedInterfaces()
         .WithScopedLifetime());
+
+builder.Services.AddMemoryCache();
 
 builder.Services.AddMediatR(Gatherly.Application.AssemblyReference.Assembly);
 
