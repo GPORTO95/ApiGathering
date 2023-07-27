@@ -31,14 +31,25 @@ public sealed class Gathering : AggregateRoot
     private Gathering() { }
 
     public Member Creator { get; private set; }
+
     public GatheringType Type { get; private set; }
+
     public string Name { get; private set; }
+
     public DateTime ScheduledAtUtc { get; private set; }
+
     public string? Location { get; private set; }
+
     public int? MaximumNumberOfAttendees { get; private set; }
+
     public DateTime? InvitationsExpireAtUtc { get; private set; }
+
     public int NumberOfAttendees { get; private set; }
+
+    public bool Canceled { get; private set; }
+
     public IReadOnlyCollection<Attendee> Attendees => _attendees;
+
     public IReadOnlyCollection<Invitation> Invitations => _invitations;
 
     public static Gathering Create(
