@@ -44,21 +44,17 @@ builder.Services.AddValidatorsFromAssembly(
 
 string connectionString = builder.Configuration.GetConnectionString("Database");
 
-builder.Services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
+//builder.Services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
 
-builder.Services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
+//builder.Services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(
     (sp, optionsBuilder) =>
     {
-        var outboxInterceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>()!;
-        var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>()!;
+        //var outboxInterceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>()!;
+        //var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>()!;
 
-        optionsBuilder.UseSqlServer(connectionString,
-                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
-            .AddInterceptors(
-                outboxInterceptor,
-                auditableInterceptor);
+        optionsBuilder.UseSqlServer(connectionString);
     });
 
 builder.Services.AddQuartz(configure =>

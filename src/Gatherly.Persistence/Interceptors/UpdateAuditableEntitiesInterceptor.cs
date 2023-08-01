@@ -20,23 +20,25 @@ public sealed class UpdateAuditableEntitiesInterceptor
             return base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
-        IEnumerable<EntityEntry<IAuditableEntity>> entries =
-            dbContext
-                .ChangeTracker
-                .Entries<IAuditableEntity>();
+        #region :: Código removido e levado para classe UnitOfWork
+        //IEnumerable<EntityEntry<IAuditableEntity>> entries =
+        //    dbContext
+        //        .ChangeTracker
+        //        .Entries<IAuditableEntity>();
 
-        foreach (EntityEntry<IAuditableEntity> entityEntry in entries)
-        {
-            if(entityEntry.State == EntityState.Added)
-            {
-                entityEntry.Property(a => a.CreatedOnUtc).CurrentValue = DateTime.UtcNow;
-            }
+        //foreach (EntityEntry<IAuditableEntity> entityEntry in entries)
+        //{
+        //    if(entityEntry.State == EntityState.Added)
+        //    {
+        //        entityEntry.Property(a => a.CreatedOnUtc).CurrentValue = DateTime.UtcNow;
+        //    }
 
-            if(entityEntry.State == EntityState.Modified)
-            {
-                entityEntry.Property(a => a.ModifiedOnUtc).CurrentValue = DateTime.UtcNow;
-            }
-        }
+        //    if(entityEntry.State == EntityState.Modified)
+        //    {
+        //        entityEntry.Property(a => a.ModifiedOnUtc).CurrentValue = DateTime.UtcNow;
+        //    }
+        //}
+        #endregion
 
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }

@@ -28,9 +28,7 @@ internal sealed class UpdateMemberCommandHandler : ICommandHandler<UpdateMemberC
             cancellationToken);
 
         if(member is null)
-        {
             return Result.Failure(DomainErrors.Member.NotFound(request.MemberId));
-        }
 
         Result<FirstName> firstNameResult = FirstName.Create(request.FirstName);
         Result<LastName> lastNameResult = LastName.Create(request.LastName);
