@@ -5,7 +5,6 @@ using Gatherly.Domain.Repositories;
 using Gatherly.Infrastructure.BackgroundJobs;
 using Gatherly.Infrastructure.Idempotence;
 using Gatherly.Persistence;
-using Gatherly.Persistence.Interceptors;
 using Gatherly.Persistence.Repository;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +16,11 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 // Scrutor
 builder.Services.Decorate<IMemberRepository, CachedMemberRepository>();
+
+builder.Services.AddStackExchangeRedisCache(redisOptions =>
+{
+    redisOptions.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
 
 builder
     .Services
