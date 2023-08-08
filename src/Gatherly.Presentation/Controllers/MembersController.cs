@@ -1,10 +1,12 @@
 ﻿using Gatherly.Application.Members.Commands.CreateMember;
+using Gatherly.Application.Members.Commands.Login;
 using Gatherly.Application.Members.Commands.UpdateMember;
 using Gatherly.Application.Members.Queries.GetMemberById;
 using Gatherly.Domain.Shared;
 using Gatherly.Presentation.Abstractions;
 using Gatherly.Presentation.Contracts.Members;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gatherly.Presentation.Controllers;
@@ -16,6 +18,7 @@ public sealed class MembersController : ApiController
         : base(sender)
     { }
 
+    [Authorize]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetMemberId(Guid id, CancellationToken cancellationToken)
     {
@@ -26,6 +29,21 @@ public sealed class MembersController : ApiController
         return response.IsSuccess 
             ? Ok(response.Value) 
             : NotFound(response.Error);
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> LoginMember(
+        [FromBody] LoginRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new LoginCommand(request.Email);
+
+        Result<string> tokenResult = await Sender.Send(command, cancellationToken);
+
+        if (tokenResult.IsFailure)
+            return HandleFailure(tokenResult);
+
+        return Ok(tokenResult.Value);
     }
 
     [HttpPost]

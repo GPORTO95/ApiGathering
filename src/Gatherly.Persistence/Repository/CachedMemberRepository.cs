@@ -62,6 +62,11 @@ public class CachedMemberRepository : IMemberRepository
         return member;
     }
 
+    public Task<Member?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default)
+    {
+        return _decorated.GetByEmailAsync(email, cancellationToken);
+    }
+
     public Task<bool> IsEmailUniqueAsync(Email email, CancellationToken cancellationToken = default) =>
         _decorated.IsEmailUniqueAsync(email, cancellationToken);
 
