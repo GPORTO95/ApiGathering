@@ -3,7 +3,6 @@ using Gatherly.Domain.Repositories;
 using Gatherly.Domain.ValueObjects;
 using Gatherly.Persistence.Infrastructure;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 
 namespace Gatherly.Persistence.Repository;
