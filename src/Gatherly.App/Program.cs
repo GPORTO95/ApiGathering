@@ -51,7 +51,6 @@ builder.Services.AddValidatorsFromAssembly(
 string connectionString = builder.Configuration.GetConnectionString("Database");
 
 //builder.Services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
-
 //builder.Services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(
@@ -62,6 +61,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 
         optionsBuilder.UseSqlServer(connectionString);
     });
+
+builder.Services.AddScoped<IJob, ProcessOutboxMessagesJob>();
 
 builder.Services.AddQuartz(configure =>
 {
