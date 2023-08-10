@@ -19,7 +19,7 @@ public sealed class MembersController : ApiController
         : base(sender)
     { }
 
-    //[HasPermission(Permission.ReadMembers)]
+    [HasPermission(Permission.ReadMembers)]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetMemberId(Guid id, CancellationToken cancellationToken)
     {
@@ -68,7 +68,7 @@ public sealed class MembersController : ApiController
             result.Value);
     }
 
-    //[HasPermission(Permission.UpdateMember)]
+    [HasPermission(Permission.UpdateMember)]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateMember(
         Guid id,

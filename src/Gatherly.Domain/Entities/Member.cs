@@ -26,6 +26,8 @@ public sealed class Member : AggregateRoot, IAuditableEntity
 
     public DateTime? ModifiedOnUtc { get; set; }
 
+    public ICollection<Role> Roles { get; set; }
+
     public static Member Create(Guid id, FirstName firstName, LastName lastName, Email email)
     {
         var member = new Member(id, firstName, lastName, email);
