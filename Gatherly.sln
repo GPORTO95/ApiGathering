@@ -19,7 +19,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gatherly.App", "src\Gatherl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5056EDB1-BB46-4E79-B37B-CE81F495D270}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gatherly.Application.UnitTests", "test\Gatherly.Application.UnitTests\Gatherly.Application.UnitTests.csproj", "{AF322A81-5021-4110-AAEC-1AA18B3D2376}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gatherly.Application.UnitTests", "test\Gatherly.Application.UnitTests\Gatherly.Application.UnitTests.csproj", "{AF322A81-5021-4110-AAEC-1AA18B3D2376}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{28CC7568-5219-437B-B09E-D6DE17D0B75F}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
