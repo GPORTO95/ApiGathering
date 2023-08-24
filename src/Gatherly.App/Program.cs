@@ -19,7 +19,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 // Scrutor
-builder.Services.Decorate<IMemberRepository, CachedMemberRepository>();
+//builder.Services.Decorate<IMemberRepository, CachedMemberRepository>();
 
 builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {
@@ -35,7 +35,7 @@ builder
             Gatherly.Persistence.AssemblyReference.Assembly)
         .AddClasses(false)
         .UsingRegistrationStrategy(RegistrationStrategy.Skip)
-        .AsImplementedInterfaces()
+        .AsMatchingInterface()
         .WithScopedLifetime());
 
 builder.Services.AddMemoryCache();
