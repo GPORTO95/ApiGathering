@@ -1,31 +1,44 @@
-﻿using Gatherly.Application.Abstractions.Messaging;
+﻿using Dapper;
+using Gatherly.Application.Abstractions;
+using Gatherly.Application.Abstractions.Messaging;
 using Gatherly.Domain.Errors;
 using Gatherly.Domain.Repositories;
 using Gatherly.Domain.Shared;
+using Microsoft.Data.SqlClient;
 
 namespace Gatherly.Application.Members.Queries.GetMemberById;
 
 internal sealed class GetMemberByIdQueryHandler
     : IQueryHandler<GetMemberByIdQuery, MemberResponse>
 {
-    private readonly IMemberRepository _memberRepository;
+    private readonly ISqlConnectionFactory _connectionFactory;
 
-    public GetMemberByIdQueryHandler(IMemberRepository memberRepository)
+    public GetMemberByIdQueryHandler(ISqlConnectionFactory connectionFactory)
     {
-        _memberRepository = memberRepository;
+        _connectionFactory = connectionFactory;
     }
 
     public async Task<Result<MemberResponse>> Handle(
-        GetMemberByIdQuery request, 
+        GetMemberByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var member = await _memberRepository.GetByIdAsync(request.MemberId, cancellationToken);
 
-        if (member is null)
-            return Result.Failure<MemberResponse>(DomainErrors.Member.NotFound(request.MemberId));
+        await using SqlConnection sqlConnection = _connectionFactory.CreateConnection();
 
-        var response = new MemberResponse(member.Id, member.Email.Value);
+        MemberResponse? memberResponse = await sqlConnection
+            .QueryFirstOrDefaultAsync<MemberResponse>(
+                @"SELECT Id, Email, FirstName, LastName
+                    FROM Members
+                    WHERE Id = @MemberId",
+                new
+                {
+                    request.MemberId
+                });
 
-        return response;
+        if (memberResponse is null)
+            return Result.Failure<MemberResponse>(
+                DomainErrors.Member.NotFound(request.MemberId));
+
+        return memberResponse;
     }
 }
