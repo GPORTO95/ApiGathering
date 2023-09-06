@@ -29,7 +29,7 @@ public class CreateMemberCommandHandlerTests
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(DomainErrors.Member.EmailAlreadyInUse);
+        result.Errors.FirstOrDefault().Should().Be(DomainErrors.Member.EmailAlreadyInUse);
     }
 
     [Fact]

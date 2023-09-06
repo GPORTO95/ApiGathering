@@ -29,7 +29,7 @@ public sealed class MembersController : ApiController
 
         return response.IsSuccess 
             ? Ok(response.Value) 
-            : NotFound(response.Error);
+            : NotFound(response.Errors);
     }
 
     [HttpPost("login")]

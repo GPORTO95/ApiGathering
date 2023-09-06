@@ -27,7 +27,7 @@ internal sealed class CreateMemberCommandHandler
         Result<Email> emailResult = Email.Create(request.Email);
 
         if (emailResult.IsFailure)
-            return Result.Failure<Guid>(emailResult.Error);
+            return Result.Failure<Guid>(emailResult.Errors);
 
         Result<FirstName> firstNameResult = FirstName.Create(request.FirstName);
         Result<LastName> lastNameResult = LastName.Create(request.LastName);

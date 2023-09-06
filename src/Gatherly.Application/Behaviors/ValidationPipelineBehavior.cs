@@ -50,12 +50,14 @@ public class ValidationPipelineBehavior<TRequest, TResponse>
             return (ValidationResult.WithErrors(errors) as TResult)!;
         }
 
-        object validationResult = typeof(ValidationResult<>)
-            .GetGenericTypeDefinition()
-            .MakeGenericType(typeof(TResult).GenericTypeArguments[0])
-            .GetMethod(nameof(ValidationResult.WithErrors))!
+        object result = typeof(Result)
+            .GetMethods()
+            .First(m =>
+                m is { IsGenericMethod: true, Name: nameof(Result.Failure) } &&
+                m.GetParameters().First().ParameterType == typeof(Error[]))!
+            .MakeGenericMethod(typeof(TResult).GenericTypeArguments[0])
             .Invoke(null, new object?[] { errors })!;
 
-        return (TResult) validationResult;
+        return (TResult)result;
     }
 }
