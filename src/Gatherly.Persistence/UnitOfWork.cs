@@ -3,7 +3,9 @@ using Gatherly.Domain.Repositories;
 using Gatherly.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
+using System.Data;
 
 namespace Gatherly.Persistence;
 
@@ -19,6 +21,13 @@ internal sealed class UnitOfWork : IUnitOfWork
         UpdateAuditableEntities();
 
         return _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public IDbTransaction BeginTransaction()
+    {
+        var transaction = _dbContext.Database.BeginTransaction();
+
+        return transaction.GetDbTransaction();
     }
 
     public void ConvertDomainEventsToOutboxMessages()

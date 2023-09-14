@@ -35,17 +35,31 @@ internal sealed class AcceptInvitationCommandHandler : ICommandHandler<AcceptInv
         var invitation = gathering.Invitations
             .FirstOrDefault(i => i.Id == request.InvitationId);
 
-        if(invitation.Status != InvitationStatus.Pending)
+        if(invitation is null || invitation.Status != InvitationStatus.Pending)
             return Result.Failure(DomainErrors.Invitation.AlreadyAccepted(invitation.Id));
 
-        Result<Attendee> attendeeResult = gathering.AcceptInvitation(invitation);
+        using var transaction = _unitOfWork.BeginTransaction();
 
-        if(attendeeResult.IsSuccess)
+        try
         {
-            _attendeeRepository.Add(attendeeResult.Value);
-        }
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+            Result<Attendee> attendeeResult = gathering.AcceptInvitation(invitation);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            if (attendeeResult.IsSuccess)
+            {
+                _attendeeRepository.Add(attendeeResult.Value);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }
+
+            transaction.Commit();
+        }
+        catch (Exception)
+        {
+            transaction.Rollback();
+        }
 
         return Result.Success();
     }
