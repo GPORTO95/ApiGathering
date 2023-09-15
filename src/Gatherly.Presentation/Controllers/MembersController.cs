@@ -7,6 +7,7 @@ using Gatherly.Domain.Shared;
 using Gatherly.Infrastructure.Authentication;
 using Gatherly.Presentation.Abstractions;
 using Gatherly.Presentation.Contracts.Members;
+using Gatherly.Presentation.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -52,20 +53,15 @@ public sealed class MembersController : ApiController
         [FromBody] RegisterMemberRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new CreateMemberCommand(
-            request.Email,
-            request.FirstName,
-            request.LastName);
-
-        Result<Guid> result = await Sender.Send(command, cancellationToken);
-
-        if(result.IsFailure)
-            return HandleFailure(result);
-
-        return CreatedAtAction(
-            nameof(GetMemberId),
-            new { Id = result.Value },
-            result.Value);
+        return await Result
+            .Create(
+                new CreateMemberCommand(
+                request.Email,
+                request.FirstName,
+                request.LastName))
+            .Bind(command => Sender.Send(command))
+            .Match(id => CreatedAtAction(nameof(GetMemberId), new { id }, id),
+            HandleFailure);
     }
 
     [HasPermission(Permission.UpdateMember)]
@@ -75,14 +71,15 @@ public sealed class MembersController : ApiController
         [FromBody] UpdateMemberRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateMemberCommand(id, request.FirstName, request.LastName);
-
-        Result result = await Sender.Send(
-            command, cancellationToken);
-
-        if(result.IsFailure)
-            return HandleFailure(result);
-
-        return NoContent();
+        return await Result.
+            Create(
+                new UpdateMemberCommand(
+                    id, 
+                    request.FirstName, 
+                    request.LastName))
+            .Bind(command => Sender.Send(command))
+            .Match(
+                NoContent,
+                HandleFailure);
     }
 }
