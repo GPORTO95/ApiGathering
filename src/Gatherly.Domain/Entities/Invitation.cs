@@ -12,14 +12,24 @@ public sealed class Invitation : Entity
         GatheringId = gathering.Id;
         Status = InvitationStatus.Pending;
         CreatedOnUtc = DateTime.UtcNow;
+        Member = member;
+        Gathering = gathering;
     }
 
     private Invitation() { }
 
     public Guid GatheringId { get; private set; }
+
+    public Gathering Gathering { get; private set; }
+
     public Guid MemberId { get; private set; }
+
+    public Member Member { get; private set; }
+
     public InvitationStatus Status { get; private set; }
+
     public DateTime CreatedOnUtc { get; private set; }
+
     public DateTime ModifiedOnUtc { get; private set; }
 
     internal void Expire()
