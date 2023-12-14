@@ -1,4 +1,5 @@
 using Gatherly.App.Configuration;
+using Gatherly.App.DependencyInjection;
 using Gatherly.App.Middlewares;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -18,10 +19,24 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 /// MÉTODO 2
 /// Uma vez configurado, basta criar suas devidas classes 
-builder.Services
-    .InstallServices(
-        builder.Configuration,
-        typeof(IServiceInstaller).Assembly);
+//builder.Services
+//    .InstallServices(
+//        builder.Configuration,
+//        typeof(IServiceInstaller).Assembly);
+
+/// MÉTODO 3
+builder.Services.AddApplication();
+
+builder.Services.AddInfrastructure();
+
+builder.Services.AddPersistence(builder.Configuration);
+
+builder.Services.AddBackgroundJobs();
+
+builder.Services.AddPresentation();
+
+builder.Services.AddAuthenticationAndAuthorization();
+
 
 WebApplication app = builder.Build();
 

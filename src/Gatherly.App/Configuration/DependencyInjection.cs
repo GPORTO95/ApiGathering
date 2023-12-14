@@ -16,142 +16,142 @@ using System.Reflection;
 
 namespace Gatherly.App.Configuration;
 
-public static class DependencyInjection
-{
-    public static IServiceCollection AddCaching(
-            this IServiceCollection services,
-            IConfiguration configuration)
-    {
-        services.AddStackExchangeRedisCache(redisOptions =>
-        {
-            string connection = configuration.GetConnectionString("Redis")!;
+//public static class DependencyInjection
+//{
+//    public static IServiceCollection AddCaching(
+//            this IServiceCollection services,
+//            IConfiguration configuration)
+//    {
+//        services.AddStackExchangeRedisCache(redisOptions =>
+//        {
+//            string connection = configuration.GetConnectionString("Redis")!;
 
-            redisOptions.Configuration = connection;
-        });
+//            redisOptions.Configuration = connection;
+//        });
 
-        services.AddMemoryCache();
+//        services.AddMemoryCache();
 
-        return services;
-    }
+//        return services;
+//    }
 
-    public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services
-            .Scan(
-                selector => selector
-                    .FromAssemblies(
-                        Gatherly.Infrastructure.AssemblyReference.Assembly,
-                        Gatherly.Persistence.AssemblyReference.Assembly)
-                    .AddClasses(false)
-                    .UsingRegistrationStrategy(RegistrationStrategy.Skip)
-                    .AsMatchingInterface()
-                    .WithScopedLifetime());
+//    public static IServiceCollection AddInfrastructure(
+//        this IServiceCollection services,
+//        IConfiguration configuration)
+//    {
+//        services
+//            .Scan(
+//                selector => selector
+//                    .FromAssemblies(
+//                        Gatherly.Infrastructure.AssemblyReference.Assembly,
+//                        Gatherly.Persistence.AssemblyReference.Assembly)
+//                    .AddClasses(false)
+//                    .UsingRegistrationStrategy(RegistrationStrategy.Skip)
+//                    .AsMatchingInterface()
+//                    .WithScopedLifetime());
 
-        services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
+//        services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
 
-        services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
+//        services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
 
-        services.AddDbContext<ApplicationDbContext>(
-            (sp, optionsBuilder) =>
-            {
-                optionsBuilder.UseSqlServer(
-                    configuration.GetConnectionString("Database"));
-            });
+//        services.AddDbContext<ApplicationDbContext>(
+//            (sp, optionsBuilder) =>
+//            {
+//                optionsBuilder.UseSqlServer(
+//                    configuration.GetConnectionString("Database"));
+//            });
 
-        return services;
-    }
+//        return services;
+//    }
 
-    public static IServiceCollection AddApplication(this IServiceCollection services)
-    {
-        services.AddMediatR(Gatherly.Application.AssemblyReference.Assembly);
+//    public static IServiceCollection AddApplication(this IServiceCollection services)
+//    {
+//        services.AddMediatR(Gatherly.Application.AssemblyReference.Assembly);
 
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+//        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
-        services.Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
+//        services.Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
 
-        services.AddValidatorsFromAssembly(
-            Gatherly.Application.AssemblyReference.Assembly,
-            includeInternalTypes: true);
+//        services.AddValidatorsFromAssembly(
+//            Gatherly.Application.AssemblyReference.Assembly,
+//            includeInternalTypes: true);
 
-        return services;
-    }
+//        return services;
+//    }
 
-    public static IServiceCollection AddBackgroundJobs(this IServiceCollection services)
-    {
-        services.AddScoped<IJob, ProcessOutboxMessagesJob>();
+//    public static IServiceCollection AddBackgroundJobs(this IServiceCollection services)
+//    {
+//        services.AddScoped<IJob, ProcessOutboxMessagesJob>();
 
-        services.AddQuartz(configure =>
-        {
-            var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+//        services.AddQuartz(configure =>
+//        {
+//            var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
 
-            configure
-                .AddJob<ProcessOutboxMessagesJob>(jobKey)
-                .AddTrigger(
-                    trigger =>
-                        trigger.ForJob(jobKey)
-                            .WithSimpleSchedule(
-                                schedule =>
-                                    schedule.WithIntervalInSeconds(100)
-                                        .RepeatForever()));
+//            configure
+//                .AddJob<ProcessOutboxMessagesJob>(jobKey)
+//                .AddTrigger(
+//                    trigger =>
+//                        trigger.ForJob(jobKey)
+//                            .WithSimpleSchedule(
+//                                schedule =>
+//                                    schedule.WithIntervalInSeconds(100)
+//                                        .RepeatForever()));
 
-            configure.UseMicrosoftDependencyInjectionJobFactory();
-        });
+//            configure.UseMicrosoftDependencyInjectionJobFactory();
+//        });
 
-        services.AddQuartzHostedService();
+//        services.AddQuartzHostedService();
 
-        return services;
-    }
+//        return services;
+//    }
 
-    public static IServiceCollection AddPresentation(this IServiceCollection services)
-    {
-        services
-            .AddControllers()
-            .AddApplicationPart(Gatherly.Presentation.AssemblyReference.Assembly);
+//    public static IServiceCollection AddPresentation(this IServiceCollection services)
+//    {
+//        services
+//            .AddControllers()
+//            .AddApplicationPart(Gatherly.Presentation.AssemblyReference.Assembly);
 
-        services.AddSwaggerGen();
+//        services.AddSwaggerGen();
 
-        return services;
-    }
+//        return services;
+//    }
 
-    public static IServiceCollection AddAuthenticationAndAuthorization(
-        this IServiceCollection services)
-    {
-        services.ConfigureOptions<JwtOptionsSetup>();
-        services.ConfigureOptions<JwtBearerOptionsSetup>();
+//    public static IServiceCollection AddAuthenticationAndAuthorization(
+//        this IServiceCollection services)
+//    {
+//        services.ConfigureOptions<JwtOptionsSetup>();
+//        services.ConfigureOptions<JwtBearerOptionsSetup>();
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer();
+//        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//            .AddJwtBearer();
 
-        services.AddAuthorization();
-        services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
-        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+//        services.AddAuthorization();
+//        services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+//        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
-        return services;
-    }
+//        return services;
+//    }
 
-    public static IServiceCollection InstallServices(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        params Assembly[] assemblies)
-    {
-        IEnumerable<IServiceInstaller> serviceInstallers = assemblies
-            .SelectMany(a => a.DefinedTypes)
-            .Where(IsAssignableToType<IServiceInstaller>)
-            .Select(Activator.CreateInstance)
-            .Cast<IServiceInstaller>();
+//    public static IServiceCollection InstallServices(
+//        this IServiceCollection services,
+//        IConfiguration configuration,
+//        params Assembly[] assemblies)
+//    {
+//        IEnumerable<IServiceInstaller> serviceInstallers = assemblies
+//            .SelectMany(a => a.DefinedTypes)
+//            .Where(IsAssignableToType<IServiceInstaller>)
+//            .Select(Activator.CreateInstance)
+//            .Cast<IServiceInstaller>();
 
-        foreach (IServiceInstaller serviceInstaller in serviceInstallers)
-        {
-            serviceInstaller.Install(services, configuration);
-        }
+//        foreach (IServiceInstaller serviceInstaller in serviceInstallers)
+//        {
+//            serviceInstaller.Install(services, configuration);
+//        }
 
-        return services;
+//        return services;
 
-        static bool IsAssignableToType<T>(TypeInfo typeInfo) =>
-            typeof(T).IsAssignableFrom(typeInfo) &&
-            !typeInfo.IsInterface &&
-            !typeInfo.IsAbstract;
-    }
-}
+//        static bool IsAssignableToType<T>(TypeInfo typeInfo) =>
+//            typeof(T).IsAssignableFrom(typeInfo) &&
+//            !typeInfo.IsInterface &&
+//            !typeInfo.IsAbstract;
+//    }
+//}
