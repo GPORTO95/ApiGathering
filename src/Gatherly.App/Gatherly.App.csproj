@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Ardalis.GuardClauses" Version="4.1.1" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.3.0" />
 		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.0">
@@ -18,6 +19,7 @@
 		<PackageReference Include="Quartz.Extensions.Hosting" Version="3.5.0" />
 		<PackageReference Include="Scrutor" Version="4.2.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+		<PackageReference Include="Throw" Version="1.4.0" />
 	</ItemGroup>
 
 	<ItemGroup>

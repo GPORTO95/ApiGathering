@@ -22,11 +22,8 @@ public sealed class LastName : ValueObject
 
     public static Result<LastName> Create(string lastName)
     {
-        if (string.IsNullOrWhiteSpace(lastName))
-            return Result.Failure<LastName>(DomainErrors.LastName.Empty);
-
-        if (lastName.Length > MaxLength)
-            return Result.Failure<LastName>(DomainErrors.LastName.TooLong);
+        Ensure.NotNullOrWithSpace(lastName, DomainErrors.LastName.Empty);
+        Ensure.NotGreaterTan(lastName.Length, MaxLength, DomainErrors.LastName.TooLong);
 
         return new LastName(lastName);
     }

@@ -3,6 +3,9 @@ using Gatherly.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Scrutor;
 using Gatherly.App.Middlewares;
+using Ardalis.GuardClauses;
+using Throw;
+using Gatherly.Domain.Shared;
 
 namespace Gatherly.App.Configuration;
 
@@ -10,6 +13,14 @@ public class InfrastructureServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration)
     {
+        string? connectionString = configuration.GetConnectionString("Database");
+
+        Ensure.NotNullOrWithSpace(connectionString);
+
+        Guard.Against.NullOrWhiteSpace(connectionString);
+
+        connectionString.ThrowIfNull();
+
         services
             .Scan(
                 selector => selector
@@ -28,8 +39,7 @@ public class InfrastructureServiceInstaller : IServiceInstaller
         services.AddDbContext<ApplicationDbContext>(
             (sp, optionsBuilder) =>
             {
-                optionsBuilder.UseSqlServer(
-                    configuration.GetConnectionString("Database"));
+                optionsBuilder.UseSqlServer(connectionString);
             });
 
         services.AddLogging();
