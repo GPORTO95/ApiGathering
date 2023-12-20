@@ -107,13 +107,37 @@ public sealed class Gathering : AggregateRoot
         }
     }
 
+    public Result Cancel(DateTime utcNow)
+    {
+        if (utcNow > ScheduledAtUtc)
+        {
+            return Result.Failure(DomainErrors.Gathering.AlreadyPassed);
+        }
+
+        if (Type == GatheringType.WithExpirationForInvitations &&
+            utcNow > InvitationsExpireAtUtc)
+        {
+            foreach (Invitation invitation in _invitations
+                .Where(i => i.Status == InvitationStatus.Pending))
+            {
+                invitation.Expire();
+            }
+        }
+
+        Canceled = true;
+
+        RaiseDomainEvent(new GatheringCancelledDomainEvent(Guid.NewGuid(), Id));
+
+        return Result.Success();
+    }
+
     public Result<Invitation> SendInvitation(Member member)
     {
         // Validate 
-        if (Creator.Id == member.Id) 
+        if (Creator.Id == member.Id)
             return Result.Failure<Invitation>(DomainErrors.Gathering.InvitingCreator);
 
-        if (ScheduledAtUtc < DateTime.UtcNow) 
+        if (ScheduledAtUtc < DateTime.UtcNow)
             return Result.Failure<Invitation>(DomainErrors.Gathering.AlreadyPassed);
 
         var invitation = new Invitation(Guid.NewGuid(), member, this);

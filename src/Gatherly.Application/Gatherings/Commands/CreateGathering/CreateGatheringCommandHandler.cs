@@ -20,11 +20,11 @@ internal sealed class CreateGatheringCommandHandler : IRequestHandler<CreateGath
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Unit> Handle(CreateGatheringCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CreateGatheringCommand request, CancellationToken cancellationToken)
     {
-        var member = await _memberRepository.GetByIdAsync(request.MemberId, cancellationToken);
+        Member? member = await _memberRepository.GetByIdAsync(request.MemberId, cancellationToken);
 
-        if (member == null) return Unit.Value;
+        if (member == null) return;
 
         var gathering = Gathering.Create(
             Guid.NewGuid(),
@@ -39,7 +39,5 @@ internal sealed class CreateGatheringCommandHandler : IRequestHandler<CreateGath
         _gatheringRepository.Add(gathering);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return Unit.Value;
     }
 }

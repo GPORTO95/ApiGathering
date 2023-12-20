@@ -3,7 +3,7 @@ using Gatherly.Domain.Entities;
 
 namespace Gatherly.Infrastructure.Services;
 
-internal sealed class EmailService : IEmailService
+public sealed class EmailService : IEmailService
 {
     public Task SendWelcomeEmailAsync(Member member, CancellationToken cancellationToken = default)
     {
@@ -16,6 +16,11 @@ internal sealed class EmailService : IEmailService
     }
 
     public Task SendInvitationSentEmailAsync(Member member, Gathering gathering, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task SendGatheringCancelledEmailAsync(Attendee attendee, CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }

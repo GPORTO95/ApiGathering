@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
 using Gatherly.App.OptionsSetup;
+using Gatherly.Application.Abstractions;
 using Gatherly.Application.Behaviors;
 using Gatherly.Domain.Repositories;
+using Gatherly.Domain.Shared;
 using Gatherly.Infrastructure.Authentication;
 using Gatherly.Infrastructure.BackgroundJobs;
 using Gatherly.Persistence;
@@ -11,7 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
-using Scrutor;
+using Gatherly.Infrastructure.Services;
 
 namespace Gatherly.App.DependencyInjection;
 
@@ -88,23 +90,35 @@ public static class DependencyInjectionExtensions
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        services.AddScoped<IMemberRepository, MemberRepository>();
-        services.Decorate<IMemberRepository, CachingMemberRepository>();
+        //services.AddScoped<IMemberRepository, MemberRepository>();
+        //services.Decorate<IMemberRepository, CachingMemberRepository>();
 
-        services.Scan(selector => selector.FromAssemblies(
-                Infrastructure.AssemblyReference.Assembly,
-                Persistence.AssemblyReference.Assembly)
-            .AddClasses(false)
-            .UsingRegistrationStrategy(RegistrationStrategy.Skip)
-            .AsMatchingInterface()
-            .WithScopedLifetime());
+        //services.Scan(selector => selector.FromAssemblies(
+        //        Infrastructure.AssemblyReference.Assembly,
+        //        Persistence.AssemblyReference.Assembly)
+        //    .AddClasses(false)
+        //    .UsingRegistrationStrategy(RegistrationStrategy.Skip)
+        //    .AsMatchingInterface()
+        //    .WithScopedLifetime());
+
+        //return services;
+
+         services.AddScoped<IMemberRepository, MemberRepository>();
+        services.AddScoped<IAttendeeRepository, AttendeeRepository>();
+        services.AddScoped<IGatheringRepository, GatheringRepository>();
+        services.AddScoped<IInvitationRepository, InvitationRepository>();
+
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ISystemTimeProvider, SystemTimeProvider>();
 
         return services;
     }
 
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
-        string connectionString = configuration.GetConnectionString("Database")!;
+        string connectionString = configuration.GetConnectionString("Database");
+
+        Ensure.NotNullOrWithSpace(connectionString);
 
         services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
 
